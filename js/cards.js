@@ -26,15 +26,20 @@ class Storage {
     }
     
     sort() {
+        // установим переключатель, чтобы знать, когда отстановиться
         this.reachLastDestination = false;
+        // последний добавленный (и пока что единственный) - это начальный элемент
         this.lastAddedDestination = this.firstElement;
 
+        // пока не дойдем до конечного пункта путешествия, перебираем карточки (каждый раз последний добавленный меняется)
         while (!this.reachLastDestination) {
             this.goForLastDestination(this.lastAddedDestination)
         }
 
+        // теперь уже идем также, но в начало путешествия; устанавливаем переключатель
         this.reachFirstSource = false;
 
+        // пока не дойдем до начального пункта путешествия, перебираем карточки
         while (!this.reachFirstSource) {
             this.goForFirstSource(this.firstElement)
         }
@@ -56,7 +61,6 @@ class Storage {
             this.lastAddedDestination = cardElement.nextCard;
         } else {
             // если конечный пункт этой карточки нигде не упомянут, то мы достигли конечной точки путешествия
-            cardElement.isLastElement = true;
             this.reachLastDestination = true;
         }
     }
@@ -80,6 +84,22 @@ class Storage {
             this.reachFirstSource = true;
         }
     }
+
+    setGenerator() {
+        this.reachLastDestination = false;
+        this.currentElement = this.firstElement;
+    }
+
+    * routeGenerator() {
+        while (!this.reachLastDestination) {
+            yield this.currentElement;
+            if (this.currentElement.nextCard) {
+                this.currentElement = this.currentElement.nextCard;
+            } else {
+                this.reachLastDestination = true;
+            }
+        }
+    }
 }
 
 
@@ -88,9 +108,35 @@ class Card {
         this.sourceName = cardElement["source"];
         this.destinationName = cardElement["destination"];
         this.transportType = cardElement["type"];
-        this.additionalInfo = cardElement["info"];
+        this.baggageInfo = cardElement["baggageInfo"];
         this.transportIdentifier = cardElement["identifier"];
-        this.isLastElement = false;
+        this.seat = cardElement["seat"];
+        this.gate = cardElement["gate"];
         this.nextCard = null;
+    }
+
+    generateMessage() {
+        var message = "Take " + this.transportType + " ";
+        // если есть номер рейса, добавляем
+        if (this.transportIdentifier) {
+            message += this.transportIdentifier + " ";
+        }
+        message += "from " + this.sourceName + " to " + this.destinationName + ". ";
+        // если указан выход, добавляем в сообщение
+        if (this.gate) {
+            message += "Gate " + this.gate + ". ";
+        }
+        // если есть место, указываем; если нет - пишем, что место не назначено
+        if (this.seat) {
+            message += "Seat " + this.seat + ". ";
+        } else {
+            message += "No seat assignment. ";
+        }
+        // если есть инфо про багаж, добавляем в сообщение
+        if (this.baggageInfo) {
+            message += this.baggageInfo;
+        }
+        return message;
+
     }
 }
