@@ -1,12 +1,16 @@
+// mapping для входных данных. ** помечены обязательные элементы.
+// Входные данные представляют собой несортированный массив карточек.
+// Каждая карточка представляет из себя словарь.
+
 data = [
     {
-        "source": "Gerona Airport",
-        "destination": "Stockholm",
-        "type": "flight",
-        "identifier": "SK455",
-        "gate": "458",
-        "seat": "3A",
-        "baggageInfo": "Baggage drop at ticket counter 344."
+        "source": "Gerona Airport",  // ** начальный пункт билета
+        "destination": "Stockholm",  // ** конечный пункт билета
+        "type": "flight",  // ** тип транспортного средства
+        "identifier": "SK455",  // номер рейса
+        "gate": "458",  // номер выхода
+        "seat": "3A",  // номер места
+        "baggageInfo": "Baggage drop at ticket counter 344."  // инфо про багаж
     },
     {
         "source": "Stockholm",

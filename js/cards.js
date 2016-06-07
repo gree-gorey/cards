@@ -1,6 +1,5 @@
 class Storage {
     constructor(data) {
-        this.cards = [];
         this.sources = {};
         this.destinations = {};
         this.firstElement = null;
@@ -12,17 +11,16 @@ class Storage {
         for (var i = 0; i < data.length; i++) {
             // для каждой создаем экземпляр класса Card со всеми параметрами
             var myCard = new Card(data[i]);
-            // этот экземпляр добавляем в массив хранилища
-            this.cards.push(myCard);
             // в словарь начальных пунктов добавляем ссылку на объект по ключу - названию начального пункта
             this.sources[myCard.sourceName] = myCard;
             // в словарь конечных пунктов добавляем ссылку на объект по ключу - названию конечного пункта
             this.destinations[myCard.destinationName] = myCard;
+            if (i == 0) {
+                this.firstElement = myCard;
+            }
         }
         // сделаем начальной карточкой любую, например первую
-        this.firstElement = this.cards[0];
-        // и сразу удалим ее из массива хранилища
-        this.cards.splice(0, 1);
+        this.firstElement = this.sources[data[0]["source"]];
     }
     
     sort() {
@@ -50,11 +48,6 @@ class Storage {
         if (cardElement.destinationName in this.sources) {
             // прописываем в текущей карточке ссылку на следующую (т.е. на найденную)
             cardElement.nextCard = this.sources[cardElement.destinationName];
-            // удаляем ссылку на найденную карточку из массива хранилища
-            var i = this.cards.indexOf(cardElement);
-            if(i != -1) {
-                this.cards.splice(i, 1);
-            }
             // удаляем ссылку на найденную карточку из словаря начальных пунктов
             delete this.sources[cardElement.destinationName];
             // запоминаем для себя ссылку на последнюю найденную карточку
@@ -72,11 +65,6 @@ class Storage {
             this.firstElement = this.destinations[cardElement.sourceName];
             // прописываем ссылку на текущую карточку из найденной
             this.firstElement.nextCard = cardElement;
-            // удаляем ссылку на текущую карточку из массива хранилища
-            var i = this.cards.indexOf(cardElement);
-            if(i != -1) {
-                this.cards.splice(i, 1);
-            }
             // удаляем ссылку на найденную карточку из словаря конечных пунктов
             delete this.destinations[cardElement.sourceName];
         } else {
